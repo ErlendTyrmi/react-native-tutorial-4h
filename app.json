@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "react-native-tutorial-4h",
-    "slug": "react-native-tutorial-4h",
+    "name": "Aora",
+    "slug": "Aora",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "aora",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
