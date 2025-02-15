@@ -1,23 +1,23 @@
 {
   "expo": {
-    "name": "Aora",
-    "slug": "Aora",
+    "name": "Allora",
+    "slug": "Allora",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "aora",
+    "scheme": "allora",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.Aora"
+      "bundleIdentifier": "com.anonymous.Allora"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.Aora"
+      "package": "com.anonymous.Allora"
     },
     "web": {
       "bundler": "metro",
@@ -29,7 +29,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
