@@ -7,6 +7,7 @@ import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
 import { createUser } from "@/lib/appwrite";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const SignUp = () => {
   const [form, setform] = useState({
@@ -15,6 +16,7 @@ const SignUp = () => {
     password: "",
   });
   const [isSubmitting, setisSubmitting] = useState(false);
+  const { setUser } = useGlobalContext();
 
   const submitForm = async () => {
     if (!form.email || !form.password || !form.userName) {
@@ -24,11 +26,11 @@ const SignUp = () => {
     setisSubmitting(true);
 
     try {
-      const result = await createUser(form.email, form.userName, form.password);
+      const result = await createUser(form.userName, form.email, form.password);
 
       if (!result) throw new Error("Failed to create account");
 
-      // Store in global state
+      setUser(result);
       router.replace("/home");
     } catch (error: any) {
       Alert.alert("Error", error.message ?? "An error occurred");
