@@ -35,4 +35,10 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# appwrite
+secrets.ts
+
+# VS Code
+react-native-tutorial-4h.code-workspace
+
 app-example

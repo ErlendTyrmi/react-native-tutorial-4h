@@ -1,15 +1,9 @@
 import { images } from "../constants";
-import {
-  SafeAreaView,
-  ScrollView,
-  Image,
-  View,
-  Text,
-  StatusBar,
-} from "react-native";
+import { SafeAreaView, ScrollView, Image, View, Text } from "react-native";
 import "./../global.css";
 import CustomButton from "@/components/CustomButton";
 import { Redirect, router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 export default function HomeScreen() {
   return (
@@ -52,7 +46,7 @@ export default function HomeScreen() {
           />
         </View>
       </ScrollView>
-      <StatusBar backgroundColor="#161622" barStyle="light-content" />
+      <StatusBar style="light" backgroundColor="#161622" />
     </SafeAreaView>
   );
 }
