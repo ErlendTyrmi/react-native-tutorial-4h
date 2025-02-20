@@ -22,11 +22,11 @@ const avatars = new Avatars(client);
 const databases = new Databases(client);
 
 // Register user
-export async function createUser(
+export const createUser = async (
   username: string,
   email: string,
   password: string
-) {
+) => {
   try {
     const newAccount = await account.create(
       ID.unique(),
@@ -57,10 +57,10 @@ export async function createUser(
   } catch (error) {
     throw new Error(String(error));
   }
-}
+};
 
 // Sign In
-export async function signIn(email: string, password: string) {
+export const signIn = async (email: string, password: string) => {
   try {
     const session = await account.createEmailPasswordSession(email, password);
 
@@ -69,10 +69,10 @@ export async function signIn(email: string, password: string) {
     console.log(error);
     throw new Error(error as any);
   }
-}
+};
 
 // Get Account
-export async function getAccount() {
+export const getAccount = async () => {
   try {
     const currentAccount = await account.get();
 
@@ -81,10 +81,10 @@ export async function getAccount() {
     console.log(error);
     throw new Error(error as any);
   }
-}
+};
 
 // Get Current User
-export async function getCurrentUser() {
+export const getCurrentUser = async () => {
   try {
     const currentAccount = await getAccount();
     if (!currentAccount) throw Error;
@@ -102,10 +102,10 @@ export async function getCurrentUser() {
     console.log(error);
     return null;
   }
-}
+};
 
 // Sign Out
-export async function signOut() {
+export const signOut = async () => {
   try {
     const session = await account.deleteSession("current");
 
@@ -113,4 +113,16 @@ export async function signOut() {
   } catch (error) {
     throw new Error(error as any);
   }
-}
+};
+
+export const getAllPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId
+    );
+    return posts.documents;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
