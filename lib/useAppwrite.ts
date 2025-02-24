@@ -11,7 +11,6 @@ const useAppwrite = (fn: { (): Promise<Models.Document[]>; (): any }) => {
     try {
       const response = await fn();
       setdata(response);
-      console.log(data);
     } catch (error) {
       console.log(error);
       Alert.alert("Error", (error as any).message ?? "Loading videos failed.");

@@ -5,16 +5,19 @@ import { images } from "../../constants";
 import SearchField from "@/components/SearchField";
 import Trending from "@/components/Trending";
 import EmptyState from "@/components/EmptyState";
-import { getAllPosts } from "@/lib/appwrite";
+import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
 import useAppwrite from "@/lib/useAppwrite";
 import VideoCard from "@/components/VideoCard";
-import { VideoCollection } from "../models/video";
+import { VideoCollection, VideoItem } from "../models/video";
 
 const Home = () => {
   const [refreshing, setrefreshing] = useState(false);
 
-  const { data, isLoading, refetch } = useAppwrite(getAllPosts);
-  //console.log(data);
+  const { data: posts, isLoading, refetch } = useAppwrite(getAllPosts);
+  const { data: latestPosts } = useAppwrite(getLatestPosts);
+
+  console.log("latest posts");
+  console.log(latestPosts);
 
   const onRefresh = async () => {
     setrefreshing(true);
@@ -25,7 +28,7 @@ const Home = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={data as VideoCollection}
+        data={posts as VideoCollection}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => <VideoCard video={item} />}
         ListHeaderComponent={() => (
@@ -59,7 +62,7 @@ const Home = () => {
                 Latest videos
               </Text>
 
-              <Trending posts={[{ id: 1 }, { id: 2 }, { id: 3 }]} />
+              <Trending posts={latestPosts as VideoCollection} />
             </View>
           </View>
         )}
