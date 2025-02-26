@@ -1,6 +1,6 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { VideoItem } from "@/app/models/video";
+import { VideoItem } from "@/models/videoItem";
 import { icons } from "@/constants";
 import VideoPlayer from "./VideoPlayer";
 

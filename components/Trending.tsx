@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import React, { useState } from "react";
-import { VideoItem } from "@/app/models/video";
+import { VideoItem } from "@/models/videoItem";
 import { icons } from "@/constants";
 import VideoPlayer from "@/components/VideoPlayer";
 

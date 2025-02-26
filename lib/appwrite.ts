@@ -139,3 +139,38 @@ export const getLatestPosts = async () => {
     throw new Error(error as string);
   }
 };
+
+export const searchPosts = async (query: string) => {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId,
+      [Query.search("title", query)]
+    );
+    return posts.documents;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+
+export const getPostsForUser = async (userId: string) => {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId,
+      [Query.equal("creator", userId)]
+    );
+    return posts.documents;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+
+const logout = async () => {
+  try {
+    const session = await account.deleteSession("current");
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};

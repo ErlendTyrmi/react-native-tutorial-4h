@@ -3,7 +3,7 @@ export interface Creator {
   $createdAt: string;
   $databaseId: string;
   $id: string;
-  $permissions: any[]; // Adjust type if needed
+  $permissions: any[];
   $updatedAt: string;
   accountId: string;
   avatar: string;
@@ -16,7 +16,7 @@ export interface VideoItem {
   $createdAt: string;
   $databaseId: string;
   $id: string;
-  $permissions: any[]; // Adjust type if needed
+  $permissions: any[];
   $updatedAt: string;
   creator: Creator;
   prompt: string;

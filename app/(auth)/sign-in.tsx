@@ -6,8 +6,9 @@ import { images } from "@/constants";
 import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
-import { signIn } from "@/lib/appwrite";
+import { getCurrentUser, signIn } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import { UserAuthInfo } from "../../models/userAuthInfo";
 
 const SignIn = () => {
   const [form, setform] = useState({
@@ -15,7 +16,20 @@ const SignIn = () => {
     password: "",
   });
   const [isSubmitting, setisSubmitting] = useState(false);
-  const { setUser } = useGlobalContext();
+  const { setUser, setIsLoggedIn } = useGlobalContext();
+
+  // After signing in, get the user object to display name etc
+  const setUserAfterSignIn = async () => {
+    await getCurrentUser().then((res) => {
+      if (res) {
+        setIsLoggedIn(true);
+        setUser(res as UserAuthInfo);
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    });
+  };
 
   const submitForm = async () => {
     if (!form.email || !form.password) {
@@ -26,8 +40,11 @@ const SignIn = () => {
 
     try {
       const result = await signIn(form.email, form.password);
-      setUser(result);
-      router.replace("/home");
+      if (result) {
+        setUserAfterSignIn().then(() => router.replace("/home"));
+      } else {
+        throw new Error("Sign in failed.");
+      }
     } catch (error: any) {
       Alert.alert("Error", error.message ?? "An error occurred");
     } finally {

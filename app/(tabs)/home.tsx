@@ -8,16 +8,14 @@ import EmptyState from "@/components/EmptyState";
 import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
 import useAppwrite from "@/lib/useAppwrite";
 import VideoCard from "@/components/VideoCard";
-import { VideoCollection, VideoItem } from "../models/video";
+import { VideoCollection } from "../../models/videoItem";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const Home = () => {
   const [refreshing, setrefreshing] = useState(false);
-
+  const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const { data: posts, isLoading, refetch } = useAppwrite(getAllPosts);
   const { data: latestPosts } = useAppwrite(getLatestPosts);
-
-  console.log("latest posts");
-  console.log(latestPosts);
 
   const onRefresh = async () => {
     setrefreshing(true);
@@ -39,7 +37,7 @@ const Home = () => {
                   Welcome
                 </Text>
                 <Text className="font-pmedium text-2xl text-gray-100">
-                  Username
+                  {user?.username ?? "Unknown friend"}
                 </Text>
               </View>
 
@@ -52,8 +50,6 @@ const Home = () => {
               </View>
             </View>
             <SearchField
-              title={""}
-              value={""}
               placeholder={"Search for a video topic"}
               keyboardType={"default"}
             />

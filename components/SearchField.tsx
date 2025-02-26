@@ -4,17 +4,21 @@ import { icons } from "../constants";
 import { router, usePathname } from "expo-router";
 
 interface SearchFieldProps {
-  title: string;
-  value: string;
-  placeholder: string;
+  title?: string;
+  value?: string;
+  initialQuery?: string;
+  placeholder?: string;
   onChangeText?: (e: string) => void;
   formStyles?: string;
-  keyboardType: "default" | "email-address" | "numeric" | "password";
+  keyboardType?: "default" | "email-address" | "numeric" | "password";
 }
 
-const SearchField: React.FC<SearchFieldProps> = ({ placeholder }) => {
+const SearchField: React.FC<SearchFieldProps> = ({
+  placeholder,
+  initialQuery,
+}) => {
   const pathName = usePathname();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery ?? "");
 
   return (
     <View className="border-2 border-black-200 h-16 px-4 bg-black-100 rounded-2xl w-full focus:border-secondary items-center flex-row space-x-4">

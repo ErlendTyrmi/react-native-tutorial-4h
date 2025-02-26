@@ -1,3 +1,4 @@
+import { UserAuthInfo } from "@/models/userAuthInfo";
 import { getCurrentUser } from "@/lib/appwrite";
 import React, {
   createContext,
@@ -12,8 +13,8 @@ import React, {
 interface ContextType {
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
-  user: any;
-  setUser: Dispatch<SetStateAction<any>>;
+  user: UserAuthInfo | null;
+  setUser: Dispatch<SetStateAction<UserAuthInfo | null>>;
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
 }
@@ -35,7 +36,7 @@ type ContextProviderProps = {
 
 export const GlobalProvider = ({ children }: ContextProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserAuthInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   // Try load user on mount
@@ -44,7 +45,7 @@ export const GlobalProvider = ({ children }: ContextProviderProps) => {
       .then((res) => {
         if (res) {
           setIsLoggedIn(true);
-          setUser(res);
+          setUser(res as UserAuthInfo);
         } else {
           setIsLoggedIn(false);
           setUser(null);
