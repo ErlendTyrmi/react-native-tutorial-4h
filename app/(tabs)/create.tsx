@@ -6,79 +6,86 @@ import {
   Image,
   Alert,
 } from "react-native";
-import * as DocumentPicker from "expo-document-picker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "@/components/FormField";
 import VideoPlayer from "@/components/VideoPlayer";
 import { icons } from "@/constants";
+import * as ImagePicker from "expo-image-picker";
 import CustomButton from "@/components/CustomButton";
 import { VideoCreateFormData } from "@/models/videoCreateFormData";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { createVideoPost, uploadFile } from "@/lib/appwrite";
+import { createVideoPost, logout } from "@/lib/appwrite";
 import { router } from "expo-router";
+
+const defaultFormData: VideoCreateFormData = {
+  title: "",
+  video: "",
+  thumbnail: "",
+  prompt: "",
+  userId: "",
+};
 
 const Create = () => {
   const { user } = useGlobalContext();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<VideoCreateFormData>({
-    title: "",
-    video: "",
-    thumbnail: "",
-    prompt: "",
-    userId: "",
-  });
+  const [formData, setFormData] =
+    useState<VideoCreateFormData>(defaultFormData);
 
-  const openPicker = async (mediaType: "video" | "image") => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type:
-        mediaType === "image"
-          ? ["image/png", "image/jpg"]
-          : ["video/mp4", "video/gif"],
+  const openPicker = async (mediaType: "videos" | "images") => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images", "videos"],
+      allowsEditing: false,
+      aspect: [4, 3],
+      quality: 1,
     });
+
     if (!result.canceled) {
-      if (mediaType === "image") {
+      if (mediaType === "images") {
         setFormData({ ...formData, thumbnail: result.assets[0] });
       }
 
-      if (mediaType === "video") {
+      if (mediaType === "videos") {
         setFormData({ ...formData, video: result.assets[0] });
       }
     }
   };
 
   const submit = async () => {
-    // Add the user id
-    if (!user || !user!.$id) {
-      Alert.alert("User is not logged in.");
-      return;
-    }
+    const userId = user?.$id as string;
 
-    console.log("3x user id");
-    const userId = user.$id;
+    if (userId.length < 1) {
+      Alert.alert("Error", "The session failed.");
+    }
+    console.log("You got this!");
     console.log(userId);
-    console.log(user.$id);
-    setFormData({ ...formData, userId: userId });
-    console.log(formData.userId);
 
     if (
       !formData.prompt ||
       !formData.thumbnail ||
       !formData.title ||
-      !formData.video ||
-      !formData.userId
+      !formData.video
     ) {
+      console.log(formData);
       return Alert.alert("Please fill out all the fields!");
     }
 
     setLoading(true);
 
     try {
-      createVideoPost(formData);
-      router.push("/home");
+      const data = { ...formData, userId: userId };
+      console.log(data);
+      const result = await createVideoPost(data);
+
+      if (result) {
+        setFormData(defaultFormData);
+        router.push("/home");
+      }
     } catch (e: any) {
       console.log(e);
       Alert.alert("Error", e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,7 +107,7 @@ const Create = () => {
           <Text className="text-base text-gray-100 font-pmedium">
             Upload Video
           </Text>
-          <TouchableOpacity onPress={() => openPicker("video")}>
+          <TouchableOpacity onPress={() => openPicker("videos")}>
             {formData.video ? (
               <VideoPlayer
                 source={formData.video}
@@ -123,9 +130,13 @@ const Create = () => {
           <Text className="text-base text-gray-100 font-pmedium">
             Thumbnail Image
           </Text>
-          <TouchableOpacity onPress={() => openPicker("image")}>
+          <TouchableOpacity onPress={() => openPicker("images")}>
             {formData.thumbnail ? (
-              <Image />
+              <Image
+                source={{ uri: formData.thumbnail.uri }}
+                className="h14 w14"
+                resizeMode="contain"
+              />
             ) : (
               <View className="w-full h-16 px-4 bg-black-100 rounded-2xl justify-center items-center border-2 border-black-200 flex-row">
                 <Image

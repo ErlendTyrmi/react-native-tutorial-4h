@@ -121,7 +121,8 @@ export const getAllPosts = async () => {
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.videoCollectionId
+      appwriteConfig.videoCollectionId,
+      [Query.orderDesc("$createdAt")]
     );
     return posts.documents;
   } catch (error) {
@@ -168,7 +169,7 @@ export const getPostsForUser = async (userId: string) => {
   }
 };
 
-const logout = async () => {
+export const logout = async () => {
   try {
     const session = await account.deleteSession("current");
   } catch (error) {
@@ -178,7 +179,7 @@ const logout = async () => {
 };
 
 // Helper to CreateVideo
-export async function getFilePreview(fileId: string, type: string) {
+export const getFilePreview = async (fileId: string, type: string) => {
   let fileUrl;
   if (type === "video") {
     fileUrl = storage.getFileView(appwriteConfig.storageId, fileId);
@@ -198,26 +199,31 @@ export async function getFilePreview(fileId: string, type: string) {
   if (!fileUrl) throw Error;
 
   return fileUrl;
-}
+};
 
 // Helper to CreateVideo
-export async function uploadFile(file: any, type: string) {
+export const uploadFile = async (file: any, type: string) => {
   if (!file) return;
 
-  const { mimeType, ...rest } = file;
-  const asset = { type: mimeType, ...rest };
+  // A bit of renaming for the appwrite file input
+  const input = {
+    name: file.fileName,
+    type: file.mimeType,
+    size: file.fileSize,
+    uri: file.uri,
+  };
 
   const uploadedFile = await storage.createFile(
     appwriteConfig.storageId,
     ID.unique(),
-    asset
+    input
   );
 
   const fileUrl = await getFilePreview(uploadedFile.$id, type);
   return fileUrl;
-}
+};
 
-export async function createVideoPost(form: VideoCreateFormData) {
+export const createVideoPost = async (form: VideoCreateFormData) => {
   const [thumbnailUrl, videoUrl] = await Promise.all([
     uploadFile(form.thumbnail, "image"),
     uploadFile(form.video, "video"),
@@ -237,4 +243,4 @@ export async function createVideoPost(form: VideoCreateFormData) {
   );
 
   return newPost;
-}
+};

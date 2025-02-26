@@ -26,9 +26,9 @@
     },
     "plugins": [
       [
-        "expo-document-picker",
+        "expo-image-picker",
         {
-          "iCloudContainerEnvironment": "Production"
+          "photosPermission": "The app accesses your photos for testing. Do not share personal photos here!"
         }
       ],
       "expo-router",
