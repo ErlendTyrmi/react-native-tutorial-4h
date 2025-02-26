@@ -13,26 +13,23 @@ import FormField from "@/components/FormField";
 import VideoPlayer from "@/components/VideoPlayer";
 import { icons } from "@/constants";
 import CustomButton from "@/components/CustomButton";
-
-export interface FormData {
-  title: string;
-  video: any;
-  thumbnail: any;
-  prompt: string;
-}
+import { VideoCreateFormData } from "@/models/videoCreateFormData";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { createVideoPost, uploadFile } from "@/lib/appwrite";
+import { router } from "expo-router";
 
 const Create = () => {
+  const { user } = useGlobalContext();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<VideoCreateFormData>({
     title: "",
     video: "",
     thumbnail: "",
     prompt: "",
+    userId: "",
   });
 
   const openPicker = async (mediaType: "video" | "image") => {
-    console.log(mediaType);
-
     const result = await DocumentPicker.getDocumentAsync({
       type:
         mediaType === "image"
@@ -40,33 +37,49 @@ const Create = () => {
           : ["video/mp4", "video/gif"],
     });
     if (!result.canceled) {
-      console.log(result);
-
       if (mediaType === "image") {
         setFormData({ ...formData, thumbnail: result.assets[0] });
       }
 
-      if (mediaType === "image") {
+      if (mediaType === "video") {
         setFormData({ ...formData, video: result.assets[0] });
       }
-    } else {
-      setTimeout(() => {
-        console.log("Document picked: " + JSON.stringify(result, null, 2));
-      });
     }
   };
 
-  const submit = () => {
+  const submit = async () => {
+    // Add the user id
+    if (!user || !user!.$id) {
+      Alert.alert("User is not logged in.");
+      return;
+    }
+
+    console.log("3x user id");
+    const userId = user.$id;
+    console.log(userId);
+    console.log(user.$id);
+    setFormData({ ...formData, userId: userId });
+    console.log(formData.userId);
+
     if (
       !formData.prompt ||
       !formData.thumbnail ||
       !formData.title ||
-      !formData.video
+      !formData.video ||
+      !formData.userId
     ) {
       return Alert.alert("Please fill out all the fields!");
     }
 
     setLoading(true);
+
+    try {
+      createVideoPost(formData);
+      router.push("/home");
+    } catch (e: any) {
+      console.log(e);
+      Alert.alert("Error", e);
+    }
   };
 
   return (

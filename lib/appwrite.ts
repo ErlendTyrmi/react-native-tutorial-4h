@@ -1,3 +1,4 @@
+import { VideoCreateFormData } from "@/models/videoCreateFormData";
 import { appwriteConfig } from "@/secrets";
 import {
   Account,
@@ -5,6 +6,7 @@ import {
   Client,
   Databases,
   ID,
+  ImageGravity,
   Query,
   Storage,
 } from "react-native-appwrite";
@@ -174,3 +176,65 @@ const logout = async () => {
     throw new Error(error as string);
   }
 };
+
+// Helper to CreateVideo
+export async function getFilePreview(fileId: string, type: string) {
+  let fileUrl;
+  if (type === "video") {
+    fileUrl = storage.getFileView(appwriteConfig.storageId, fileId);
+  } else if (type === "image") {
+    fileUrl = storage.getFilePreview(
+      appwriteConfig.storageId,
+      fileId,
+      2000,
+      2000,
+      ImageGravity.Top,
+      100
+    );
+  } else {
+    throw new Error("Invalid file type");
+  }
+
+  if (!fileUrl) throw Error;
+
+  return fileUrl;
+}
+
+// Helper to CreateVideo
+export async function uploadFile(file: any, type: string) {
+  if (!file) return;
+
+  const { mimeType, ...rest } = file;
+  const asset = { type: mimeType, ...rest };
+
+  const uploadedFile = await storage.createFile(
+    appwriteConfig.storageId,
+    ID.unique(),
+    asset
+  );
+
+  const fileUrl = await getFilePreview(uploadedFile.$id, type);
+  return fileUrl;
+}
+
+export async function createVideoPost(form: VideoCreateFormData) {
+  const [thumbnailUrl, videoUrl] = await Promise.all([
+    uploadFile(form.thumbnail, "image"),
+    uploadFile(form.video, "video"),
+  ]);
+
+  const newPost = await databases.createDocument(
+    appwriteConfig.databaseId,
+    appwriteConfig.videoCollectionId,
+    ID.unique(),
+    {
+      title: form.title,
+      thumbnail: thumbnailUrl,
+      video: videoUrl,
+      prompt: form.prompt,
+      creator: form.userId,
+    }
+  );
+
+  return newPost;
+}
